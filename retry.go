@@ -86,6 +86,12 @@ func (t *retryableTransport) RoundTrip(req *http.Request) (*http.Response, error
 		resp, err = t.transport.RoundTrip(req)
 		retries++
 	}
+	if retries >= RetryCount {
+		if err != nil {
+			return resp, fmt.Errorf("server return %d, retry limit reached (err=%s)", resp.StatusCode, err.Error())
+		}
+		return resp, fmt.Errorf("server returned %d, retry limit reached", resp.StatusCode)
+	}
 	// Return the response
 	return resp, err
 }
