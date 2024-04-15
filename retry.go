@@ -88,9 +88,9 @@ func (t *retryableTransport) RoundTrip(req *http.Request) (*http.Response, error
 	}
 	if retries >= RetryCount {
 		if err != nil {
-			return resp, fmt.Errorf("server return %d, retry limit reached (err=%s)", resp.StatusCode, err.Error())
+			return resp, fmt.Errorf("retry limit reached (err=%s)", err.Error())
 		}
-		return resp, fmt.Errorf("server returned %d, retry limit reached", resp.StatusCode)
+		return resp, fmt.Errorf("retry limit reached")
 	}
 	// Return the response
 	return resp, err
@@ -98,7 +98,7 @@ func (t *retryableTransport) RoundTrip(req *http.Request) (*http.Response, error
 
 func drainBody(resp *http.Response) {
 	if resp.Body != nil {
-		io.Copy(io.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		resp.Body.Close()
 	}
 }
